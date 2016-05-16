@@ -1,0 +1,57 @@
+<html>
+  <head>
+    <title>This LED is on Fire</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            text-align: center;
+        }
+        .light {
+            font-size: 48px;
+            font-weight: 700;
+            margin: 20px;
+            padding: 20px;
+            width: 150px;
+        }
+    </style>
+  </head>
+
+    <body>
+        <button id="first" class="light" style="color:green;">On</button>
+		<button id="second" class="light" style="color:green;">On</button>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+        <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
+        <script>
+			var myFirebaseRef = new Firebase("[FIREBASE PROJECT URL]");
+			myFirebaseRef.child("lights").on("value", function(snapshot) {
+				updateLights(snapshot.val());
+			});
+			
+			jQuery(".light").on('click', function() {
+				var data = {};
+				if (jQuery(this).html() === 'On') {
+				  data["lights/"+this.id] = false;
+				} else {
+				  data["lights/"+this.id] = true;
+				}
+				myFirebaseRef.update(data);
+                return false;
+            });
+			
+			function updateLights(lights) {
+				for (var key in lights) {
+					if (lights.hasOwnProperty(key)) {
+						if(lights[key]) {
+							jQuery("#"+key).html("On");
+							jQuery("#"+key).css("color", "green");
+						} else {
+							jQuery("#"+key).html("Off");
+							jQuery("#"+key).css("color", "red");
+						}
+					}
+				}
+			}
+        </script>
+    </body>
+</html>
